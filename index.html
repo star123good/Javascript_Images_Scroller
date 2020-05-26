@@ -4,14 +4,33 @@
         <title>Javascript Images Scroller</title>
         
         <link rel="Stylesheet" type="text/css" href="style/content.css">
-        <link rel="Stylesheet" type="text/css" href="style/carousel.css">
-        <link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+        <!-- <link rel="Stylesheet" type="text/css" href="style/carousel.css"> -->
+        <!-- <link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css"> -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.11/jquery.mousewheel.min.js"></script>
         <script type="text/javascript" src="scripts/jquery.carousel-1.1.min.js"></script>
-        <script type="text/javascript" src="scripts/main.js"></script>
+        <!-- <script type="text/javascript" src="scripts/main.js"></script> -->
+
+        <script>
+            $(document).ready(function() {
+                $('.carousel').carousel({
+                    carouselWidth: 930,
+                    carouselHeight: 220,
+                    directionNav: true,
+                    reflection: false,
+                    shadow: false,
+                    buttonNav: 'bullets',
+                    hMargin: 0.9,
+                    vMargin: 0.5,
+                    frontWidth: 200,
+                    frontHeight: 200,
+                    hAlign:'center',
+                    vAlign:'center',
+                });
+            });
+        </script>
         
     </head>
     <body>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>Javascript Images Scroller</title>
         
         <link rel="Stylesheet" type="text/css" href="style/content.css">
@@ -183,24 +184,150 @@
         </script>
 
         <script>
+            const eventListenerOptionsSupported = () => {
+            let supported = false;
+
+            try {
+                const opts = Object.defineProperty({}, 'passive', {
+                get() {
+                    supported = true;
+                }
+                });
+
+                window.addEventListener('test', null, opts);
+                window.removeEventListener('test', null, opts);
+            } catch (e) {}
+
+            return supported;
+            }
+
+            const defaultOptions = {
+            passive: false,
+            capture: false
+            };
+            const supportedPassiveTypes = [
+            'scroll', 'wheel',
+            'touchstart', 'touchmove', 'touchenter', 'touchend', 'touchleave',
+            'mouseout', 'mouseleave', 'mouseup', 'mousedown', 'mousemove', 'mouseenter', 'mousewheel', 'mouseover'
+            ];
+            const getDefaultPassiveOption = (passive, eventName) => {
+            if (passive !== undefined) return passive;
+
+            return supportedPassiveTypes.indexOf(eventName) === -1 ? false : defaultOptions.passive;
+            };
+
+            const getWritableOptions = (options) => {
+            const passiveDescriptor = Object.getOwnPropertyDescriptor(options, 'passive');
+
+            return passiveDescriptor && passiveDescriptor.writable !== true && passiveDescriptor.set === undefined
+                ? Object.assign({}, options)
+                : options;
+            };
+
+            const overwriteAddEvent = (superMethod) => {
+            EventTarget.prototype.addEventListener = function (type, listener, options) {
+                const usesListenerOptions = typeof options === 'object' && options !== null;
+                const useCapture          = usesListenerOptions ? options.capture : options;
+
+                options         = usesListenerOptions ? getWritableOptions(options) : {};
+                options.passive = getDefaultPassiveOption(options.passive, type);
+                options.capture = useCapture === undefined ? defaultOptions.capture : useCapture;
+
+                superMethod.call(this, type, listener, options);
+            };
+
+            EventTarget.prototype.addEventListener._original = superMethod;
+            };
+
+            const supportsPassive = eventListenerOptionsSupported();
+
+            if (supportsPassive) {
+            const addEvent = EventTarget.prototype.addEventListener;
+            overwriteAddEvent(addEvent);
+            }
+
+            function touchHandler(event) {
+                var touch = event.changedTouches[0];
+
+                var simulatedEvent = document.createEvent("MouseEvent");
+                    simulatedEvent.initMouseEvent({
+                    touchstart: "mousedown",
+                    touchmove: "mousemove",
+                    touchend: "mouseup"
+                }[event.type], true, true, window, 1,
+                    touch.screenX, touch.screenY,
+                    touch.clientX, touch.clientY, false,
+                    false, false, false, 0, null);
+
+                touch.target.dispatchEvent(simulatedEvent);
+                event.preventDefault();
+            }
+
+            function init() {
+                document.addEventListener("touchstart", touchHandler, true);
+                document.addEventListener("touchmove", touchHandler, true);
+                document.addEventListener("touchend", touchHandler, true);
+                document.addEventListener("touchcancel", touchHandler, true);
+            }
+
             var carouselVariable;
+            init();
 
             $(document).ready(function() {
+
+                var fullWidth = $('.carousel').width();
+
+                if (fullWidth <= 320) {
+                    carouselWidth = fullWidth;
+                    carouselHeight = 100;
+                    frontWidth = 100;
+                    frontHeight = 100;
+                    slidesPerScroll = 3;
+                }
+                else if (fullWidth <= 424) {
+                    carouselWidth = fullWidth - 10;
+                    carouselHeight = 130;
+                    frontWidth = 130;
+                    frontHeight = 130;
+                    slidesPerScroll = 3;
+                }
+                else if (fullWidth <= 768) {
+                    carouselWidth = fullWidth - 20;
+                    carouselHeight = 150;
+                    frontWidth = 150;
+                    frontHeight = 150;
+                    slidesPerScroll = 5;
+                }
+                else if (fullWidth <= 1440) {
+                    carouselWidth = fullWidth - 30;
+                    carouselHeight = 190;
+                    frontWidth = 180;
+                    frontHeight = 180;
+                    slidesPerScroll = 7;
+                }
+                else {
+                    carouselWidth = fullWidth - 50;
+                    carouselHeight = 220;
+                    frontWidth = 200;
+                    frontHeight = 200;
+                    slidesPerScroll = 11;
+                }
                 
                 carouselVariable = $('.carousel').carousel({
-                    carouselWidth: 930,
-                    carouselHeight: 220,
+                    carouselWidth: carouselWidth,
+                    carouselHeight: carouselHeight,
                     directionNav: true,
                     reflection: false,
                     shadow: false,
                     buttonNav: 'bullets',
                     hMargin: 0.9,
                     vMargin: 0.5,
-                    frontWidth: 200,
-                    frontHeight: 200,
+                    frontWidth: frontWidth,
+                    frontHeight: frontHeight,
                     hAlign:'center',
                     vAlign:'center',
                     autoplay: false,
+                    slidesPerScroll: slidesPerScroll,
                 });
 
                 $('img').on('dragstart', function(event) { event.preventDefault(); });

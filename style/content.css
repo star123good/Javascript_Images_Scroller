@@ -332,7 +332,7 @@ select
 .carousel {
 	position : relative;
 	margin : 0 auto;
-	width : 930px;
+	/* width : 930px; */
 	height : auto;
 	border : none;
 	overflow : visible;
@@ -346,7 +346,9 @@ select
   /* slide container */
   
   .carousel .slides {
-	margin : 0;
+	margin-top : 30px;
+	margin-left: auto;
+	margin-right: auto;
 	padding : 0;
 	border : none;
 	list-style : none;
